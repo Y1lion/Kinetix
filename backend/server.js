@@ -14,6 +14,7 @@ import MongoStore from "connect-mongo";
 
 import { initMeilisearch } from "./scripts/initMeili.js";
 import { seedProductsIfEmpty } from "./scripts/seedProducts.js";
+import { loadKeyVaultSecrets } from "./config/keyVault.js";
 
 import authRoutes from "./routes/auth.js";
 import productsRoutes from "./routes/products.js";
@@ -26,6 +27,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config();
+
+// In Azure, load production secrets from Key Vault using Managed Identity.
+// In local development, this function does nothing and .env is used instead.
+await loadKeyVaultSecrets();
 
 if (!process.env.MONGO_URI) {
 	throw new Error("MONGO_URI environment variable is not defined");
