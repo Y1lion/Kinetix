@@ -37,11 +37,13 @@ export async function loadKeyVaultSecrets() {
 	 * expected by the Kinetix backend.
 	 */
 	const secretMappings = {
-		"mongo-uri": "MONGO_URI",
-		"session-secret": "SESSION_SECRET",
-		"meili-master-key": "MEILI_MASTER_KEY",
-		"azure-language-key": "AZURE_LANGUAGE_KEY",
-		"azure-vision-key": "AZURE_VISION_KEY",
+		"MONGO-URI": "MONGO_URI",
+		"SESSION-SECRET": "SESSION_SECRET",
+		"MEILI-MASTER-KEY": "MEILI_MASTER_KEY",
+		"AZURE-LANGUAGE-KEY": "AZURE_LANGUAGE_KEY",
+		"AZURE-VISION-KEY": "AZURE_VISION_KEY",
+		"applicationinsights-connection-string":
+			"APPLICATIONINSIGHTS_CONNECTION_STRING",
 	};
 
 	try {

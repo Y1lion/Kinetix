@@ -16,6 +16,7 @@
 		"@azure/ai-language-text": "^1.1.0",
 		"@azure/identity": "^4.13.3",
 		"@azure/keyvault-secrets": "^4.11.2",
+		"applicationinsights": "^3.16.0",
 		"axios": "^1.18.1",
 		"bcryptjs": "^3.0.3",
 		"connect-mongo": "^6.0.0",
