@@ -27,7 +27,9 @@ export async function loadKeyVaultSecrets() {
 	const vaultUrl = `https://${vaultName}.vault.azure.net`;
 
 	// DefaultAzureCredential uses Managed Identity when running on Azure.
-	const credential = new DefaultAzureCredential();
+	const credential = new DefaultAzureCredential({
+		managedIdentityClientId: process.env.AZURE_CLIENT_ID,
+	});
 	const client = new SecretClient(vaultUrl, credential);
 
 	console.log(`Connecting to Azure Key Vault: ${vaultName}...`);
