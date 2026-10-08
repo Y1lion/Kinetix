@@ -14,6 +14,8 @@ import MongoStore from "connect-mongo";
 
 import { initMeilisearch } from "./scripts/initMeili.js";
 import { seedProductsIfEmpty } from "./scripts/seedProducts.js";
+import { loadKeyVaultSecrets } from "./config/keyVault.js";
+import { initApplicationInsights } from "./config/applicationInsights.js";
 
 import authRoutes from "./routes/auth.js";
 import productsRoutes from "./routes/products.js";
@@ -26,6 +28,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config();
+
+// In Azure, load production secrets from Key Vault using Managed Identity.
+// In local development, this function does nothing and .env is used instead.
+await loadKeyVaultSecrets();
+
+// Initialize Azure Application Insights after secrets have been loaded.
+initApplicationInsights();
 
 if (!process.env.MONGO_URI) {
 	throw new Error("MONGO_URI environment variable is not defined");
@@ -129,7 +138,7 @@ const startServer = async () => {
 			console.warn("Meilisearch initialization failed:", meiliError.message);
 		}
 
-		app.listen(PORT, () => {
+		app.listen(PORT, "0.0.0.0", () => {
 			console.log(`Server running on port ${PORT}`);
 			console.log(`Swagger UI available at http://localhost:${PORT}/api-docs`);
 		});

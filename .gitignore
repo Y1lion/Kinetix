@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/nextjs,node,azurefunctions,visualstudio,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=nextjs,node,azurefunctions,visualstudio,visualstudiocode
 
+.dockerignore
+
+
 ### AzureFunctions ###
 # Azure Functions localsettings file
 local.settings.json
