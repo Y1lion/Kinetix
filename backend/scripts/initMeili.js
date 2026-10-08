@@ -5,11 +5,13 @@ export async function initMeilisearch() {
 	try {
 		const index = meili.index("products");
 
-		await index.updateSettings({
+		const settingsTask = await index.updateSettings({
 			searchableAttributes: ["name", "description", "tags"],
 			filterableAttributes: ["tags", "price"],
 			displayedAttributes: ["name", "description", "price", "imageURL", "tags"],
 		});
+
+		await meili.waitForTask(settingsTask.taskUid);
 
 		console.log("Meilisearch settings updated successfully");
 
@@ -24,14 +26,13 @@ export async function initMeilisearch() {
 			tags: p.tags,
 		}));
 
-		const task = await index.addDocuments(docs);
+		const indexingTask = await index.addDocuments(docs);
 
-		console.log("Indexed products: ", task.taskUid);
+		await meili.waitForTask(indexingTask.taskUid);
+
+		console.log(`Successfully indexed ${docs.length} products`);
 	} catch (err) {
-		console.error("Meili init error: ", err);
+		console.error("Meilisearch initialization failed:", err);
+		throw err;
 	}
 }
-
-initMeilisearch().catch((err) => {
-	console.error("Meilisearch init failed:", err);
-});
