@@ -11,7 +11,7 @@ export async function initMeilisearch() {
 			displayedAttributes: ["name", "description", "price", "imageURL", "tags"],
 		});
 
-		await meili.waitForTask(settingsTask.taskUid);
+		await meili.tasks.waitForTask(settingsTask.taskUid);
 
 		console.log("Meilisearch settings updated successfully");
 
@@ -28,7 +28,7 @@ export async function initMeilisearch() {
 
 		const indexingTask = await index.addDocuments(docs);
 
-		await meili.waitForTask(indexingTask.taskUid);
+		await meili.tasks.waitForTask(indexingTask.taskUid);
 
 		console.log(`Successfully indexed ${docs.length} products`);
 	} catch (err) {
