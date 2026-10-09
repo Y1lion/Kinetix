@@ -35,15 +35,23 @@ export const hybridSearch = async ({ text, imageUrl }) => {
 
 	// 5. FALLBACK 1: Meilisearch (ENHANCED QUERY)
 	if (!products.length && (text || tags.length)) {
-		const index = meili.index("products");
+		try {
+			const index = meili.index("products");
 
-		const query = tags.length > 0 ? tags.join(" ") : text;
+			const query = tags.length > 0 ? tags.join(" ") : text;
 
-		const result = await index.search(query, {
-			limit: 12,
-		});
+			const result = await index.search(query, {
+				limit: 12,
+			});
 
-		products = result.hits;
+			products = result.hits;
+		} catch (error) {
+			console.warn("Meilisearch temporarily unavailable:", error.message);
+
+			// MongoDB remains available as the primary data source.
+			// Return an empty result instead of failing the entire request.
+			products = [];
+		}
 	}
 
 	return {

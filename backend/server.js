@@ -13,6 +13,8 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 
 import { initMeilisearch } from "./scripts/initMeili.js";
+import { meili } from "./config/meilisearch.js";
+import Product from "./models/product.js";
 import { seedProductsIfEmpty } from "./scripts/seedProducts.js";
 import { loadKeyVaultSecrets } from "./config/keyVault.js";
 import { initApplicationInsights } from "./config/applicationInsights.js";
@@ -124,6 +126,48 @@ app.use("/api/search", searchRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/health", healthRoutes);
 
+// Periodically restore the Meilisearch index if its data is lost.
+// MongoDB Atlas remains the persistent source of truth.
+let isCheckingMeilisearch = false;
+
+const checkMeilisearchIndex = async () => {
+	if (isCheckingMeilisearch) {
+		return;
+	}
+
+	isCheckingMeilisearch = true;
+
+	try {
+		const index = meili.index("products");
+		const mongoCount = await Product.countDocuments();
+
+		let meiliCount = 0;
+		let indexExists = true;
+
+		try {
+			const stats = await index.getStats();
+			meiliCount = stats.numberOfDocuments;
+		} catch (error) {
+			indexExists = false;
+			console.warn("Meilisearch index check failed:", error.message);
+		}
+
+		if (!indexExists || meiliCount !== mongoCount) {
+			console.warn(
+				`Meilisearch recovery needed: MongoDB=${mongoCount}, Meilisearch=${meiliCount}`,
+			);
+
+			await initMeilisearch();
+
+			console.log("Meilisearch index restored successfully");
+		}
+	} catch (error) {
+		console.error("Meilisearch recovery check failed:", error.message);
+	} finally {
+		isCheckingMeilisearch = false;
+	}
+};
+
 const startServer = async () => {
 	try {
 		await mongoose.connect(process.env.MONGO_URI);
@@ -142,6 +186,9 @@ const startServer = async () => {
 			console.log(`Server running on port ${PORT}`);
 			console.log(`Swagger UI available at http://localhost:${PORT}/api-docs`);
 		});
+
+		// Check Meilisearch every 5 minutes.
+		setInterval(checkMeilisearchIndex, 5 * 60 * 1000);
 	} catch (error) {
 		console.error("Server startup failed:", error.message);
 		process.exit(1);
