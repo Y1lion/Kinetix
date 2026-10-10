@@ -12,6 +12,8 @@ interface Product {
 	tags: string[];
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+
 export default function HomePage() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [imageUrlInput, setImageUrlInput] = useState(""); // URL submitted by USER
@@ -28,13 +30,13 @@ export default function HomePage() {
 
 			if (imgUrl.trim()) {
 				// If image present, query hybrid for image and text
-				endpoint = `http://localhost:3001/api/search?imageUrl=${encodeURIComponent(imgUrl.trim())}&q=${encodeURIComponent(textQuery)}`;
+				endpoint = `${API_URL}/api/search?imageUrl=${encodeURIComponent(imgUrl.trim())}&q=${encodeURIComponent(textQuery)}`;
 			} else if (textQuery.trim()) {
 				// else only text
-				endpoint = `http://localhost:3001/api/search?q=${encodeURIComponent(textQuery)}`;
+				endpoint = `${API_URL}/api/search?q=${encodeURIComponent(textQuery)}`;
 			} else {
 				// Get all products
-				endpoint = `http://localhost:3001/api/products`;
+				endpoint = `${API_URL}/api/products`;
 			}
 
 			const res = await fetch(endpoint);
