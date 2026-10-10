@@ -4,8 +4,8 @@
 	"description": "",
 	"main": "server.js",
 	"scripts": {
-		"start": "node server.js",
-		"dev": "node server.js",
+		"start": "node bootstrap.js",
+		"dev": "node bootstrap.js",
 		"verify-db": "node scripts/verify-db.js"
 	},
 	"keywords": [],
