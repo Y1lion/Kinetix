@@ -13,6 +13,9 @@ type FormData = {
 	password: string;
 };
 
+const MICROSOFT_AUTH_URL =
+	process.env.NEXT_PUBLIC_MICROSOFT_AUTH_URL ||
+	"https://kinetix-backend.icystone-4f68f29d.switzerlandnorth.azurecontainerapps.io";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 export default function LoginPage() {
@@ -116,9 +119,8 @@ export default function LoginPage() {
 				<button
 					type="button"
 					onClick={() => {
-						window.location.href = `${API_URL}/api/auth/microsoft`;
+						window.location.href = `${MICROSOFT_AUTH_URL}/api/auth/microsoft`;
 					}}
-					className="w-full rounded-lg border border-primary/40 px-4 py-3 font-semibold hover:bg-primary/10 transition-colors"
 				>
 					Continue with Microsoft
 				</button>
