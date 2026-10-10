@@ -9,7 +9,7 @@ RUN npm ci
 COPY . .
 
 # URL pubblico del backend Azure
-ARG NEXT_PUBLIC_API_URL=https://kinetix-backend.icystone-4f68f29d.switzerlandnorth.azurecontainerapps.io
+ARG NEXT_PUBLIC_API_URL=https://kinetix-backend.icystone-4f68f29d.switzerlandnorth.azurecontainerapps.io/kinetix
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 RUN npm run build
