@@ -1,47 +1,22 @@
-import { BlobServiceClient } from "@azure/storage-blob";
-import { DefaultAzureCredential } from "@azure/identity";
-import { randomUUID } from "node:crypto";
+import multer from "multer";
 
-const storageAccountName = "kinetixstorage1";
-const containerName = "product-images";
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
-// Authenticate using Managed Identity on Azure or Azure CLI locally.
-const credential = new DefaultAzureCredential();
+const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"];
 
-const blobServiceClient = new BlobServiceClient(
-	`https://${storageAccountName}.blob.core.windows.net`,
-	credential,
-);
+export const uploadImage = multer({
+	storage: multer.memoryStorage(),
 
-const containerClient = blobServiceClient.getContainerClient(containerName);
+	limits: {
+		fileSize: MAX_FILE_SIZE,
+		files: 1,
+	},
 
-const allowedMimeTypes = new Map([
-	["image/jpeg", ".jpg"],
-	["image/png", ".png"],
-	["image/webp", ".webp"],
-]);
+	fileFilter: (req, file, callback) => {
+		if (!allowedMimeTypes.includes(file.mimetype)) {
+			return callback(new Error("Only JPG, PNG and WebP images are allowed."));
+		}
 
-export const uploadProductImage = async (file) => {
-	if (!file?.buffer || !file?.mimetype) {
-		throw new Error("Invalid image file.");
-	}
-
-	const extension = allowedMimeTypes.get(file.mimetype);
-
-	if (!extension) {
-		throw new Error("Unsupported image format.");
-	}
-
-	// Generate a unique filename to avoid overwriting existing images.
-	const blobName = `${randomUUID()}${extension}`;
-	const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-
-	// Store the image with its correct content type.
-	await blockBlobClient.uploadData(file.buffer, {
-		blobHTTPHeaders: {
-			blobContentType: file.mimetype,
-		},
-	});
-
-	return blockBlobClient.url;
-};
+		callback(null, true);
+	},
+});
