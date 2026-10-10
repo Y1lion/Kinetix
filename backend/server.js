@@ -82,8 +82,8 @@ const swaggerOptions = {
 		},
 		servers: [
 			{
-				url: "http://localhost:3001",
-				description: "Development Server",
+				url: "/",
+				description: "Current Server",
 			},
 		],
 		components: {
