@@ -113,6 +113,16 @@ export default function LoginPage() {
 					{isLoading ? "Signing in..." : "Login"}
 				</button>
 
+				<button
+					type="button"
+					onClick={() => {
+						window.location.href = `${API_URL}/api/auth/microsoft`;
+					}}
+					className="w-full rounded-lg border border-primary/40 px-4 py-3 font-semibold hover:bg-primary/10 transition-colors"
+				>
+					Continue with Microsoft
+				</button>
+
 				{error && (
 					<p className="text-secondary text-sm text-center mt-4">{error}</p>
 				)}

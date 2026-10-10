@@ -1,10 +1,14 @@
 import express from "express";
 import {
-  register,
-  login,
-  getCurrentUser,
-  logout,
+	register,
+	login,
+	getCurrentUser,
+	logout,
 } from "../controllers/authController.js";
+import {
+	startMicrosoftLogin,
+	microsoftCallback,
+} from "../controllers/microsoftAuthController.js";
 
 import { requireAuth } from "../middleware/requireAuth.js";
 
@@ -131,5 +135,84 @@ router.get("/me", requireAuth, getCurrentUser);
  *         description: Unable to destroy the session.
  */
 router.post("/logout", requireAuth, logout);
+
+/**
+ * @openapi
+ * /api/auth/microsoft:
+ *   get:
+ *     summary: Sign in with Microsoft
+ *     description: >
+ *       Starts the Microsoft Entra ID authentication flow using
+ *       OAuth 2.0 Authorization Code with PKCE.
+ *       Redirects the browser to the Microsoft sign-in page.
+ *       Supports organizational and personal Microsoft accounts.
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       302:
+ *         description: Redirects the browser to Microsoft Entra ID.
+ *         headers:
+ *           Location:
+ *             description: Microsoft authorization URL.
+ *             schema:
+ *               type: string
+ *               format: uri
+ *       500:
+ *         description: Unable to start Microsoft authentication.
+ */
+router.get("/microsoft", startMicrosoftLogin);
+
+/**
+ * @openapi
+ * /api/auth/microsoft/callback:
+ *   get:
+ *     summary: Microsoft authentication callback
+ *     description: >
+ *       Handles the authorization response from Microsoft Entra ID.
+ *       Validates the OAuth state, exchanges the authorization code
+ *       using PKCE, identifies or creates the corresponding MongoDB
+ *       user, and establishes a Kinetix session.
+ *       Redirects the browser to the frontend after authentication.
+ *       This endpoint is intended to be called by Microsoft Entra ID,
+ *       not directly by the frontend.
+ *     tags:
+ *       - Authentication
+ *     parameters:
+ *       - in: query
+ *         name: code
+ *         required: false
+ *         description: Authorization code returned by Microsoft after successful authentication.
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: state
+ *         required: false
+ *         description: CSRF protection value generated when authentication started.
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: error
+ *         required: false
+ *         description: Error identifier returned by Microsoft when authentication fails.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       302:
+ *         description: >
+ *           Redirects to the frontend after successful authentication
+ *           or to the login page when authentication fails or an email
+ *           conflict is detected.
+ *         headers:
+ *           Location:
+ *             description: Frontend redirect URL.
+ *             schema:
+ *               type: string
+ *               format: uri
+ *       400:
+ *         description: Invalid authorization response, state, or PKCE parameters.
+ *       401:
+ *         description: Missing or invalid Microsoft identity information.
+ */
+router.get("/microsoft/callback", microsoftCallback);
 
 export default router;
