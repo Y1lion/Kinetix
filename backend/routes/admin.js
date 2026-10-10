@@ -1,16 +1,18 @@
 import express from "express";
 
 import {
-  getProducts,
-  addProduct,
-  deleteProduct,
+	getProducts,
+	addProduct,
+	deleteProduct,
 } from "../controllers/productController.js";
 
 import {
-  getUsers,
-  createUser,
-  deleteUser,
+	getUsers,
+	createUser,
+	deleteUser,
 } from "../controllers/userController.js";
+import { uploadImageController } from "../controllers/imageController.js";
+import { uploadImage } from "../middleware/uploadImage.js";
 
 import { requireAuth } from "../middleware/requireAuth.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
@@ -81,6 +83,57 @@ router.use(requireAdmin);
  */
 router.get("/products", getProducts);
 router.post("/products", addProduct);
+
+// Upload a product image to Azure Blob Storage.
+/**
+ * @openapi
+ * /api/admin/images/upload:
+ *   post:
+ *     summary: Upload a product image to Azure Blob Storage
+ *     description: Uploads a JPG, PNG or WebP image (maximum 5 MB) and returns its public URL.
+ *     tags: [Admin]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - image
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Product image (JPG, PNG or WebP, maximum 5 MB).
+ *     responses:
+ *       201:
+ *         description: Image uploaded successfully
+ *       400:
+ *         description: Missing, invalid or oversized image
+ *       401:
+ *         description: User not authenticated
+ *       403:
+ *         description: Admin access required
+ *       500:
+ *         description: Unable to upload image
+ */
+router.post(
+	"/images/upload",
+	(req, res, next) => {
+		uploadImage.single("image")(req, res, (error) => {
+			if (error) {
+				return res.status(400).json({
+					message: error.message,
+				});
+			}
+
+			next();
+		});
+	},
+	uploadImageController,
+);
 
 /**
  * @openapi
