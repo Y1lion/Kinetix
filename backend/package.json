@@ -16,6 +16,7 @@
 		"@azure/ai-language-text": "^1.1.0",
 		"@azure/identity": "^4.13.3",
 		"@azure/keyvault-secrets": "^4.11.2",
+		"@azure/storage-blob": "^12.34.0",
 		"applicationinsights": "^3.16.0",
 		"axios": "^1.18.1",
 		"bcryptjs": "^3.0.3",
@@ -26,7 +27,7 @@
 		"express-session": "^1.19.0",
 		"meilisearch": "^0.57.0",
 		"mongoose": "^9.6.1",
-		"multer": "^2.2.0",
+		"multer": "^2.4.0",
 		"swagger-jsdoc": "^6.2.8",
 		"swagger-ui-express": "^5.0.1"
 	}
