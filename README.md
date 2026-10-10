@@ -1,6 +1,8 @@
 # Kinetix
 
-![CI Status](https://github.com/2026-BD/Kinetix/actions/workflows/ci.yml/badge.svg)
+![CI Status](https://github.com/Y1lion/Kinetix/actions/workflows/ci.yml/badge.svg)
+![Backend Status](https://github.com/Y1lion/Kinetix/actions/workflows/deploy-backend.yml/badge.svg)
+![Frontend Status](https://github.com/Y1lion/Kinetix/actions/workflows/deploy-frontend.yml/badge.svg)
 
 Kinetix is a full-stack web application developed for the **Database Systems II** course.
 
