@@ -104,6 +104,12 @@ const swaggerOptions = {
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
+// Expose the OpenAPI specification as JSON for Azure API Management.
+app.get("/api-docs.json", (req, res) => {
+	res.json(swaggerDocs);
+});
+
+// Serve the interactive Swagger UI documentation.
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 // --- SWAGGER ---
 
