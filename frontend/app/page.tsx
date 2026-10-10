@@ -47,7 +47,13 @@ export default function HomePage() {
 			}
 
 			const data = await res.json();
-			setProducts(Array.isArray(data) ? data : []);
+			setProducts(
+				Array.isArray(data)
+					? data
+					: Array.isArray(data.products)
+						? data.products
+						: [],
+			);
 		} catch (err) {
 			console.error("API error:", err);
 			setProducts([]);
